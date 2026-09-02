@@ -43,10 +43,16 @@ test('Claude child has subscription-only environment, restricted read tools and 
  assert.equal(docs[docs.indexOf('--disallowedTools')+1],[...DRIVE_UPDATE_TOOLS,...DRIVE_MUTATING_TOOLS,...INTERCOM_READ_TOOLS,...INTERCOM_WRITE_TOOLS].join(','));
  const draftOnly=claudeArgs('docs','Draft a Kora operating brief in Slack.');
  assert.equal(draftOnly[draftOnly.indexOf('--allowedTools')+1],DRIVE_READ_TOOLS.join(','));
- const update=claudeArgs('docs','Update the Drive document with the new status.');
+ const update=claudeArgs('docs','Rename the Drive document file to Current Status.');
  assert.equal(update[update.indexOf('--allowedTools')+1],[...DRIVE_READ_TOOLS,...DRIVE_UPDATE_TOOLS].join(','));
- const updateOnly=claudeArgs('docs','docs: Update the existing Kora Drive document. Do not create a second file.');
+ const updateOnly=claudeArgs('docs','docs: Update only the title of file ID 123 to Archived. Do not create a second file.');
  assert.equal(updateOnly[updateOnly.indexOf('--allowedTools')+1],[...DRIVE_READ_TOOLS,...DRIVE_UPDATE_TOOLS].join(','));
+ const twoOperations=claudeArgs('docs','First, update only the title of file ID 123. Second, create and save one new Google Doc in Kora Drive. Do not create anything else.');
+ assert.equal(twoOperations[twoOperations.indexOf('--allowedTools')+1],[...DRIVE_READ_TOOLS,...DRIVE_CREATE_TOOLS,...DRIVE_UPDATE_TOOLS].join(','));
+ const bodyEdit=claudeArgs('docs','docs: Update the Drive document body with new status.');
+ assert.equal(bodyEdit[bodyEdit.indexOf('--allowedTools')+1],DRIVE_READ_TOOLS.join(','));
+ const negativeCreate=claudeArgs('docs','docs: Draft this here. Do not create or save anything in Kora Drive.');
+ assert.equal(negativeCreate[negativeCreate.indexOf('--allowedTools')+1],DRIVE_READ_TOOLS.join(','));
  const fin=claudeArgs('fin');
  assert.equal(fin[fin.indexOf('--allowedTools')+1],[...DRIVE_READ_TOOLS,...INTERCOM_READ_TOOLS].join(','));
  assert.equal(fin[fin.indexOf('--disallowedTools')+1],[...DRIVE_CREATE_TOOLS,...DRIVE_UPDATE_TOOLS,...DRIVE_MUTATING_TOOLS,...INTERCOM_WRITE_TOOLS].join(','));

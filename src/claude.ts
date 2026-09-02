@@ -49,8 +49,17 @@ export function claudeEnv(parent:NodeJS.ProcessEnv=process.env):NodeJS.ProcessEn
  env.DISABLE_BUG_COMMAND='1';
  return env;
 }
-export function explicitDriveCreate(request:string){return /(?:^|\bdocs:\s*|[.!?]\s+)(?:please\s+)?(?:create|save)\b[^.!?\n]{0,160}\b(?:kora\s+)?(?:google\s+)?drive\b/i.test(request);}
-export function explicitDriveUpdate(request:string){return /(?:^|\bdocs:\s*|[.!?]\s+)(?:please\s+)?(?:update|revise|edit)\b[^.!?\n]{0,160}\b(?:drive|document|file)\b/i.test(request);}
+function positiveAction(request:string,verb:RegExp,target:RegExp){
+ for(const match of request.matchAll(new RegExp(verb.source,'gi'))){
+  const index=match.index??0;
+  const prefix=request.slice(Math.max(request.lastIndexOf('.',index-1),request.lastIndexOf('!',index-1),request.lastIndexOf('?',index-1),request.lastIndexOf('\n',index-1))+1,index);
+  if(/\b(?:do not|don't|never)\b/i.test(prefix))continue;
+  if(target.test(request.slice(index,index+220)))return true;
+ }
+ return false;
+}
+export function explicitDriveCreate(request:string){return positiveAction(request,/\b(?:create|save)\b/,/\b(?:kora\s+)?(?:google\s+)?drive\b/i);}
+export function explicitDriveUpdate(request:string){return positiveAction(request,/\b(?:rename|(?:update|change)\s+(?:only\s+)?the\s+title)\b/,/\b(?:drive|document|file|file\s+id)\b/i);}
 export function claudeArgs(role:Role,request=''){
  const create=role==='docs'&&explicitDriveCreate(request);
  const update=role==='docs'&&explicitDriveUpdate(request);

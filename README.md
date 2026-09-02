@@ -39,13 +39,13 @@ On weekdays the service posts a top-level morning operating brief at 7:30 AM and
 
 The local SQLite database holds conversation context, durable event deduplication and records for support, projects, decisions, follow-ups, knowledge, FIN and document drafts. Records contain company, source type/identifier, import timestamp and provenance. Model-extracted records are explicitly marked inference. Responses include saved record IDs; request updates using those IDs. A batch of record changes is atomic. Event IDs are not retried automatically after failure, to prevent duplicate execution; review saved drafts before sending a new request. Delivery is not transactionally atomic with Slack: a connection failure can leave locally saved records and partial delivery.
 
-Document work produces drafts stored in SQLite and delivered in Slack. An explicitly worded `docs:` request can create or update a Kora Drive document; ordinary drafts do not change Drive. Binary PDF rendering is not connected. Context uses the latest 30 records and six thread turns; this is a base local service, not a full knowledge search engine.
+Document work produces drafts stored in SQLite and delivered in Slack. An explicitly worded `docs:` request can create a Kora Drive document or rename one existing file; ordinary drafts do not change Drive. The connected Drive update tool cannot edit document bodies. Binary PDF rendering is not connected. Context uses the latest 30 records and six thread turns; this is a base local service, not a full knowledge search engine.
 
 ## Company and source boundaries
 
 Only this macOS account and Kora sources are authorized. The service never reads other users' directories. SQLite refuses an existing database without the Kora company marker. Explicit foreign-company labels, personal-investment markers and recognizable credentials are rejected. These checks cannot determine ownership of arbitrary prose; approved source review remains necessary, and Claude's semantic refusal is defense in depth, not a guaranteed content classifier.
 
-Kora Google Drive is connected through the isolated Kora Claude account. Every role can use explicit read-only Drive tools. The Document Builder receives create or update access only when the current `docs:` request contains an explicit Drive creation or update instruction; ordinary drafting remains read-only. Drive copy, move, share and trash operations remain denied. Before any additional import:
+Kora Google Drive is connected through the isolated Kora Claude account. Every role can use explicit read-only Drive tools. The Document Builder receives create access only for an explicit Drive creation instruction and metadata-update access only for an explicit rename; ordinary drafting remains read-only. Drive body edits, copy, move, share and trash operations remain unavailable or denied. Before any additional import:
 
 Kora Intercom is connected through the same isolated account. The `fin:` specialist can search and read conversations, contacts, companies and Help Center articles. Article creation, article updates and connector feedback submission are explicitly denied.
 

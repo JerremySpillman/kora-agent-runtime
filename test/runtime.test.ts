@@ -38,6 +38,7 @@ test('Claude child has subscription-only environment, restricted read tools and 
  assert.equal(args[args.indexOf('--allowedTools')+1],DRIVE_READ_TOOLS.join(','));
  assert.equal(args[args.indexOf('--disallowedTools')+1],[...DRIVE_CREATE_TOOLS,...DRIVE_UPDATE_TOOLS,...DRIVE_MUTATING_TOOLS,...INTERCOM_READ_TOOLS,...INTERCOM_WRITE_TOOLS].join(','));
  const docs=claudeArgs('docs','Create and save this document in Kora Google Drive.');
+ assert.equal(docs[docs.indexOf('--max-turns')+1],'10');
  assert.equal(docs[docs.indexOf('--allowedTools')+1],[...DRIVE_READ_TOOLS,...DRIVE_CREATE_TOOLS].join(','));
  assert.equal(docs[docs.indexOf('--disallowedTools')+1],[...DRIVE_UPDATE_TOOLS,...DRIVE_MUTATING_TOOLS,...INTERCOM_READ_TOOLS,...INTERCOM_WRITE_TOOLS].join(','));
  const draftOnly=claudeArgs('docs','Draft a Kora operating brief in Slack.');

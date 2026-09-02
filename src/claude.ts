@@ -62,7 +62,7 @@ export function claudeArgs(role:Role,request=''){
  '--disable-slash-commands',
  '--no-chrome',
  '--no-session-persistence',
- '--max-turns','8',
+ '--max-turns',role==='docs'?'10':'8',
  // Read-only tools may run. Any connector or file operation that asks for
  // approval fails closed in this unattended Slack process.
  '--allowedTools',[...DRIVE_READ_TOOLS,...(create?DRIVE_CREATE_TOOLS:[]),...(update?DRIVE_UPDATE_TOOLS:[]),...(role==='fin'?INTERCOM_READ_TOOLS:[])].join(','),
@@ -96,7 +96,7 @@ const outputSchema=z.object({reply:z.string().min(1).max(12000),records:z.array(
 export async function invoke(role:Role,request:string,context:unknown,timeout:number){
  // Account connector discovery adds startup latency; keep the agent bounded by
  // max-turns while allowing enough wall time for a read and cited response.
- const raw=JSON.parse(await runClaude(claudeArgs(role,request),JSON.stringify({context,request}),Math.max(timeout,240000)));
+ const raw=JSON.parse(await runClaude(claudeArgs(role,request),JSON.stringify({context,request}),Math.max(timeout,300000)));
  if(raw.is_error || typeof raw.result!=='string')throw new Error('claude_result_failed');
  return outputSchema.parse(JSON.parse(raw.result.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'')));
 }

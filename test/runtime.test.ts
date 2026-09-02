@@ -99,6 +99,8 @@ test('weekday briefing schedule is timezone-aware and weekend-safe',()=>{
  assert.deepEqual(dueBriefings(new Date('2026-09-02T22:30:00Z'),schedule),[{slot:'afternoon',date:'2026-09-02'}]);
  assert.deepEqual(dueBriefings(new Date('2026-09-05T17:00:00Z'),schedule),[]);
  assert.match(briefingPrompt('morning','2026-09-02'),/read-only Kora Drive/i);
+ assert.match(briefingPrompt('afternoon','2026-09-02'),/Exclude agent-runtime setup/i);
+ assert.match(briefingPrompt('afternoon','2026-09-02'),/invoked by the deployed Kora scheduler/i);
 });
 
 test('subscription billing is fail-closed and Team requires explicit configuration',()=>{

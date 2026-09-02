@@ -49,8 +49,8 @@ export function claudeEnv(parent:NodeJS.ProcessEnv=process.env):NodeJS.ProcessEn
  env.DISABLE_BUG_COMMAND='1';
  return env;
 }
-export function explicitDriveCreate(request:string){return /\b(?:create|save)\b[\s\S]{0,100}\b(?:kora\s+)?(?:google\s+)?drive\b/i.test(request);}
-export function explicitDriveUpdate(request:string){return /\b(?:update|revise|edit)\b[\s\S]{0,100}\b(?:drive|document|file)\b/i.test(request);}
+export function explicitDriveCreate(request:string){return /(?:^|\bdocs:\s*|[.!?]\s+)(?:please\s+)?(?:create|save)\b[^.!?\n]{0,160}\b(?:kora\s+)?(?:google\s+)?drive\b/i.test(request);}
+export function explicitDriveUpdate(request:string){return /(?:^|\bdocs:\s*|[.!?]\s+)(?:please\s+)?(?:update|revise|edit)\b[^.!?\n]{0,160}\b(?:drive|document|file)\b/i.test(request);}
 export function claudeArgs(role:Role,request=''){
  const create=role==='docs'&&explicitDriveCreate(request);
  const update=role==='docs'&&explicitDriveUpdate(request);

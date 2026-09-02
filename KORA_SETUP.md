@@ -23,16 +23,11 @@ Execute the implementation. Do not ask Jerremy to define Kora, invent workflows,
 - If Claude authentication is missing, run the normal interactive Claude Code login and let Jerremy complete the browser step.
 - Codex may use Jerremy's normal Codex subscription for setup and repository work.
 
-## Known Slack resources
+## Slack resources
 
-- Workspace: `BAJ_Enterprise`
-- Workspace ID: `T0BU7TQKJ49`
-- Private Kora channel: `#kora-agent`
-- Channel ID: `C0BU42NUX1B`
-- Slack app: `Kora Chief of Staff`
-- Slack app ID: `A0BU23NG3R9`
+Ask Jerremy to provide or confirm the Kora Slack workspace, private channel, and installed Kora agent app during local configuration. Store their identifiers only in the private environment file, never in this public repository.
 
-The Kora bot must be deny-by-default outside `C0BU42NUX1B`. Responses stay in the originating thread.
+The Kora bot must be deny-by-default outside its configured private Kora channel. Responses stay in the originating thread.
 
 ## Kora organization already defined
 
@@ -77,19 +72,19 @@ Tracks Kora initiatives, owners, deadlines, dependencies, blockers, decisions, a
 
 Answers questions using approved Kora sources, records provenance, highlights uncertainty, and produces decision-ready research. It does not silently mix public research with official Kora facts.
 
-## Known Kora knowledge areas
+## Kora knowledge areas
 
 Use these as the initial taxonomy when approved Kora data becomes available:
 
-- Kora product and Powerblock specifications
-- Kora operating system and company hub architecture
-- Kora Install Control and the 42-day sold-to-installed SLA
-- Kora FIN agent infrastructure
-- Shopify D2C reservation, invoice, and ACH payment flow
-- Qmerit installation partnership
-- Signature Solar master services agreement
-- Capital-raise context that is company-authorized
-- Key Kora people and decision owners, including Greg and Tyler
+- approved product specifications and documentation
+- company operating processes and internal architecture
+- installation operations and service-level tracking
+- customer-support and FIN agent infrastructure
+- commerce and payment processes
+- approved partner and vendor materials
+- approved contracts and negotiation records
+- authorized financing and corporate-planning context
+- approved people and decision-owner records
 
 Do not invent the contents of these areas. Ask for or connect the approved Kora sources, then ingest with provenance.
 

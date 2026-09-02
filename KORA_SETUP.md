@@ -10,8 +10,8 @@ Execute the implementation. Do not ask Jerremy to define Kora, invent workflows,
 
 - This account and repository are Kora-only.
 - Do not access another macOS user's home directory.
-- Do not access or configure HVAC Hero accounts, files, repositories, Slack channels, Google Drive, databases, or credentials.
-- Reject any source that is visibly HVAC Hero or personal-investment material.
+- Do not access or configure any non-Kora company account, file, repository, Slack channel, Google Drive, database, or credential.
+- Reject any source that is visibly unrelated to Kora or contains unauthorized personal-investment material.
 - Never store passwords, session cookies, OAuth tokens, Slack tokens, Claude credentials, or Codex credentials in Git.
 - Never send email. Email output must remain an unsent draft.
 
@@ -140,7 +140,7 @@ After the base Slack service passes tests, ask Jerremy only for authorization or
 1. Connect only the Kora Google account/Drive.
 2. Connect Linear and map Kora projects/teams.
 3. Connect Granola or import its Kora-only export.
-4. Import the supplied Claude legacy-memory export after filtering out personal, HVAC, and unauthorized equity material.
+4. Import the supplied Claude legacy-memory export after filtering out non-Kora, personal, and unauthorized equity material.
 
 Every imported record must include company=`kora`, source type, source identifier, import timestamp, and a concise provenance note.
 
@@ -157,9 +157,8 @@ Do not claim success until all available checks pass:
 7. A request from any other channel is denied.
 8. The LaunchAgent is loaded and remains running.
 9. Logs contain no credentials or message bodies.
-10. A repository scan finds no HVAC Hero strings or data beyond the explicit prohibition in this setup contract.
+10. A repository scan finds no non-Kora company data.
 
 Pause only for a browser authentication step, local secret entry, or a final external side effect that requires Jerremy's confirmation. Otherwise keep implementing and testing.
 
 At completion report the runtime path, private environment path, database path, LaunchAgent label/status, allowed Slack channel IDs, connected Kora data sources, test results, and remaining user actions.
-

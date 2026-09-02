@@ -1,0 +1,46 @@
+{
+  "name": "kora-agent-runtime",
+  "version": "1.0.0",
+  "description": "Kora-only Slack runtime using Claude subscription authentication",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "start": "node dist/src/main.js",
+    "doctor": "node dist/src/doctor.js",
+    "prepare-local": "node dist/src/setup.js",
+    "claude-login": "node dist/src/login.js",
+    "install-agent": "node dist/src/launchagent.js",
+    "records": "node dist/src/records.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JerremySpillman/kora-agent-runtime.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/JerremySpillman/kora-agent-runtime/issues"
+  },
+  "homepage": "https://github.com/JerremySpillman/kora-agent-runtime#readme",
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^2.1.258",
+    "@slack/bolt": "^5.1.0",
+    "dotenv": "^17.4.2",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "typescript": "^7.0.2"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

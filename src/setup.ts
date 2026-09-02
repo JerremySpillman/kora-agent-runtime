@@ -1,0 +1,10 @@
+import { existsSync, writeFileSync, chmodSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { paths, privateDir } from './config.js';
+import { Store } from './store.js';
+process.umask(0o077);
+for(const p of [dirname(paths.env),paths.data,paths.logs,paths.claude,paths.cwd])privateDir(p);
+if(!existsSync(paths.env))writeFileSync(paths.env,`# Kora only. Enter credentials directly here, never in chat or Git.\nCOMPANY_ID=kora\nSLACK_KORA_BOT_TOKEN=\nSLACK_KORA_APP_TOKEN=\nSLACK_KORA_TEAM_ID=\nSLACK_KORA_APP_ID=\nSLACK_KORA_CHANNEL_ID=\nCLAUDE_TIMEOUT_MS=120000\n`,{mode:0o600,flag:'wx'});
+chmodSync(paths.env,0o600);
+new Store(paths.db).close();
+console.log('Private Kora environment prepared: '+paths.env);

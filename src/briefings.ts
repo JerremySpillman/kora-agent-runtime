@@ -8,6 +8,27 @@ import type { Store } from './store.js';
 
 export type BriefingSlot='morning'|'afternoon';
 
+const INFRASTRUCTURE_FOCUS=/\b(?:agent[- ]runtime|connector audit|operating hub|repository artifact|git(?:hub)? (?:repo|repository|checkout)|oauth scope|slack app|launchagent|scheduler permission)\b/i;
+
+export function briefingQualityIssues(slot:BriefingSlot,text:string){
+ const issues:string[]=[];
+ if(INFRASTRUCTURE_FOCUS.test(text))issues.push('infrastructure_focus');
+ const required=slot==='morning'
+  ? [/priorit/i,/commitment|due|overdue/i,/blocker|waiting/i,/next action/i]
+  : [/change/i,/commitment|open/i,/blocker|waiting/i,/carryover|next.business.day/i,/follow-up/i];
+ for(const pattern of required)if(!pattern.test(text))issues.push(`missing_${pattern.source}`);
+ const actionHeading=slot==='morning'?/next action/i:/follow-up/i;
+ const section=text.slice(Math.max(0,text.search(actionHeading)));
+ const numbered=(section.match(/(?:^|\n)\s*[1-3][.)]\s+/g)??[]).length;
+ if(numbered!==3)issues.push('not_exactly_three_actions');
+ return issues;
+}
+
+export function assertBriefingQuality(slot:BriefingSlot,text:string){
+ const issues=briefingQualityIssues(slot,text);
+ if(issues.length)throw new Error(`briefing_quality:${issues.join(',')}`);
+}
+
 function localClock(now:Date,timeZone:string){
  const parts=new Intl.DateTimeFormat('en-CA',{timeZone,weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);
  const get=(type:Intl.DateTimeFormatPartTypes)=>parts.find(part=>part.type===type)?.value??'';
@@ -36,7 +57,13 @@ export async function deliverBriefing(c:Config,store:Store,client:WebClient,slot
  const id=`briefing:${date}:${slot}`;
  if(!store.claim(id,'projects'))return 'duplicate';
  try{
-  const answer=await invoke('projects',briefingPrompt(slot,date),store.context(`scheduled:${slot}`),c.CLAUDE_TIMEOUT_MS);
+  const prompt=briefingPrompt(slot,date);
+  let answer=await invoke('projects',prompt,store.context(`scheduled:${slot}`),c.CLAUDE_TIMEOUT_MS);
+  const firstIssues=briefingQualityIssues(slot,answer.reply);
+  if(firstIssues.length){
+   answer=await invoke('projects',`${prompt} Revise the draft before returning it. The prior draft failed these checks: ${firstIssues.join(', ')}. Use clear section headings, keep operational infrastructure out, and put exactly three numbered items in the requested final action section.`,store.context(`scheduled:${slot}:revision`),c.CLAUDE_TIMEOUT_MS);
+  }
+  assertBriefingQuality(slot,answer.reply);
   assertKoraContent(answer.reply);
   const heading=slot==='morning'?`Kora morning brief — ${date}`:`Kora afternoon follow-through — ${date}`;
   for(const part of chunks(`${heading}\n\n${answer.reply}`))await client.chat.postMessage({channel:c.SLACK_KORA_CHANNEL_ID,text:part,mrkdwn:false,parse:'none',unfurl_links:false,unfurl_media:false});

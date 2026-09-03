@@ -10,7 +10,7 @@ import { claudeEnv,claudeArgs,approvedSubscription,DRIVE_READ_TOOLS,DRIVE_CREATE
 import { route } from '../src/routing.js';
 import { Store } from '../src/store.js';
 import { handle,chunks,type Incoming } from '../src/service.js';
-import { dueBriefings,briefingPrompt } from '../src/briefings.js';
+import { dueBriefings,briefingPrompt,briefingQualityIssues,assertBriefingQuality } from '../src/briefings.js';
 const c=configSchema.parse({COMPANY_ID:'kora',SLACK_KORA_BOT_TOKEN:'xoxb-test-placeholder',SLACK_KORA_APP_TOKEN:'xapp-test-placeholder',SLACK_KORA_TEAM_ID:'T00000000',SLACK_KORA_APP_ID:'A00000000',SLACK_KORA_CHANNEL_ID:'C00000000'});
 function withStore(fn:(s:Store)=>void|Promise<void>){const dir=mkdtempSync(join(tmpdir(),'kora-test-'));const s=new Store(join(dir,'test.sqlite'));return Promise.resolve().then(()=>fn(s)).finally(()=>{s.close();rmSync(dir,{recursive:true});});}
 const record={company:'kora',sourceType:'slack',sourceId:'test',provenance:'synthetic test only',kind:'support',title:'Kora fixture',body:'Synthetic issue',owner:'unassigned',due:'unknown',status:'open',classification:'inference'};
@@ -101,6 +101,15 @@ test('weekday briefing schedule is timezone-aware and weekend-safe',()=>{
  assert.match(briefingPrompt('morning','2026-09-02'),/read-only Kora Drive/i);
  assert.match(briefingPrompt('afternoon','2026-09-02'),/Exclude agent-runtime setup/i);
  assert.match(briefingPrompt('afternoon','2026-09-02'),/invoked by the deployed Kora scheduler/i);
+});
+test('briefing quality gate requires business sections and exactly three actions',()=>{
+ const morning=`Top priorities\nShip readiness\nDue commitments\nCustomer review due today\nBlockers and waiting\nVendor response pending\nNext actions\n1. Call the installer\n2. Confirm inventory\n3. Close the customer decision`;
+ assert.deepEqual(briefingQualityIssues('morning',morning),[]);
+ assert.doesNotThrow(()=>assertBriefingQuality('morning',morning));
+ assert.ok(briefingQualityIssues('morning',morning+'\nOperating Hub repository audit').includes('infrastructure_focus'));
+ assert.ok(briefingQualityIssues('morning',morning.replace('\n3. Close the customer decision','')).includes('not_exactly_three_actions'));
+ const afternoon=`Meaningful changes\nCustomer approval received\nOpen commitments\nPricing response is open\nBlockers and waiting\nPermit is waiting\nNext-business-day carryover\nInstaller confirmation\nFollow-ups\n1. Call the customer\n2. Confirm the permit\n3. Update the delivery plan`;
+ assert.deepEqual(briefingQualityIssues('afternoon',afternoon),[]);
 });
 
 test('subscription billing is fail-closed and Team requires explicit configuration',()=>{
